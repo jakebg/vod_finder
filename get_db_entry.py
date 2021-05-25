@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from itertools import islice
-#from mysql_vod import *
+from mysql_vod import *
 from enum import Enum
 import re
 
@@ -77,6 +77,19 @@ def change_date_format(date):
 
     return new_date
 
+def add_values_to_db(value, date):
+    #SELECT vod_id,vod_title FROM vod WHERE vod_title = %s;
+    #UPDATE vod SET date = %s WHERE vod_title = %s;
+    # query = ''' SELECT vod_id,vod_title 
+    # FROM vod 
+    # WHERE vod_title = '%s';
+    # ''' % values.rstrip()
+    query = ''' UPDATE vod
+    SET date = '%s'
+    WHERE vod_title = '%s';
+    ''' % (date,value.strip())
+    execute_query(connection, query)
+    pass
 
 if __name__ == '__main__':
 
@@ -87,12 +100,21 @@ if __name__ == '__main__':
             date = change_date_format(date)
             print('Game: ', game)
             print('Date: ', date,'\n')
+            #add_values_to_db(line, date)
+
 
     # test_string = '[Grand Theft Auto V] "NoPixel | Yung Dab - !EU" (03/11/2019)'
+    # date_test = '2020-03-13'
+    # add_values_to_db(test_string, date_test)
+    
     # date, game = parse_title(test_string.strip())
     # date= change_date_format(date)
     # print('Game: ', game)
     # print('Date: ', date,'\n')
+
+
+
+
     # test_string2 = 'Clint Stevens - Skyrim (Part 6) [March 18, 2020]'
     # date, game = parse_title(test_string2.strip())
     # date = change_date_format(date)
