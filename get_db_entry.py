@@ -13,11 +13,13 @@ import re
 # MoonMOON
 # [0-9]{2}\/[0-9]{2}\/[0-9]{4}
 
-re_date1 = "[0-9]{2}\/[0-9]{2}\/[0-9]{4}"
+re_date1 = "\\b[0-9]{2}\/[0-9]{2}\/[0-9]{4}\\b"
 # add \s?(\(\d{1,2}\/\d\))? for parts of videos
 re_date2 = '((January)?|(February)?|(March)?|(April)?|(May)?|(June)?|(July)?|(August)?|(September)?|(October)?|(November)?|(December)?)\D(\d{1,2}\D?),\D?(19[7-9]\d|20\d{2})'
 re_date3 = "[0-9]{2}.[0-9]{2}.[0-9]{4}"
-re_list = [re_date1, re_date2, re_date3]
+re_date4 = "\\b\d{1,2}[\/-]\d{1,2}[\/-]\d{1,2}\\b"
+
+re_list = [re_date1, re_date2, re_date3, re_date4]
 
 filename = 'test_get_db.txt'
 game_list = ['Grand Theft Auto V', 
@@ -29,19 +31,24 @@ game_list = ['Grand Theft Auto V',
     'Mario Royale',
     'Divinity: Original Sin II']
 
+FORCE_GAME = 'Grand Theft Auto V'
 
 def parse_title(parse_line):
     print(parse_line)
 
-    if any((match := string) in parse_line for string in game_list):
+    if FORCE_GAME != '':
+        game_result = FORCE_GAME
+    elif any((match := string) in parse_line for string in game_list):
         game_result = match
     else:
         game_result = 'NOGAME'
 
     for x in re_list:
         result = re.search(x,parse_line)
+
         if result:
             date_result = result.group(0)
+            print(date_result)
             break;
         else:
             date_result = 'NULL'
@@ -83,7 +90,20 @@ def change_date_format(date):
         date_time_obj = datetime.datetime.strptime(date, '%m.%d.%Y')
         new_date = date_time_obj.date()
 
+    elif re.search(re_date4,date):
+        print(date)
+        POSSIBLE_DATE_FORMATS = ['%m-%d-%y','%-m/%-d/%y','%m/%d/%y',]
+        for date_format in POSSIBLE_DATE_FORMATS :
+            try:
+                date_time_obj = datetime.datetime.strptime(date, date_format) 
+                new_date = date_time_obj.date()
+                break 
+            except ValueError:
+                new_date = 'NOTDATE'
+                pass
+
     else:
+        #print(date)
         print('Date format not found')
         new_date = 'NODATE'
 
@@ -92,7 +112,7 @@ def change_date_format(date):
 def add_values_to_db(value, date, game):
     query = ''' UPDATE vod
     SET date = '%s', game = '%s'
-    WHERE vod_title = '%s';
+    WHERE vod_title = "%s";
     ''' % (date,game, value.strip())
     execute_query(connection, query)
 
