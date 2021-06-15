@@ -18,8 +18,10 @@ re_date1 = "\\b[0-9]{2}\/[0-9]{2}\/[0-9]{4}\\b"
 re_date2 = '((January)?|(February)?|(March)?|(April)?|(May)?|(June)?|(July)?|(August)?|(September)?|(October)?|(November)?|(December)?)\D(\d{1,2}\D?),\D?(19[7-9]\d|20\d{2})'
 re_date3 = "[0-9]{2}.[0-9]{2}.[0-9]{4}"
 re_date4 = "\\b\d{1,2}[\/-]\d{1,2}[\/-]\d{1,2}\\b"
-
-re_list = [re_date1, re_date2, re_date3, re_date4]
+re_date5 = "\\b[0-9]{1,2}.[0-9]{1,2}.[0-9]{2}\\b"
+re_date6 = "\\b((January)?|(February)?|(March)?|(April)?|(May)?|(June)?|(July)?|(August)?|(September)?|(October)?|(November)?|(December)?) \d{2}...\d{4}\\b"
+re_date7 = "\\b((Jan)?|(Feb)?|(Mar)?|(Apr)?|(May)?|(Jun)?|(Jul)?|(Aug)?|(Sep)?|(Oct)?|(Nov)?|(Dec)?) \d{2}.., \d{4}\\b"
+re_list = [re_date1, re_date2, re_date3, re_date4,re_date5,re_date6,re_date7]
 
 filename = 'test_get_db.txt'
 game_list = ['Grand Theft Auto V', 
@@ -101,6 +103,22 @@ def change_date_format(date):
             except ValueError:
                 new_date = 'NOTDATE'
                 pass
+    elif re.search(re_date5,date):
+        date_time_obj = datetime.datetime.strptime(date, '%m/%d/%Y')
+        new_date = date_time_obj.date()
+    elif re.search(re_date6,date):
+        for suffix in ('st', 'nd', 'rd', 'th'):
+            date = date.replace(suffix, '')
+        print(date)
+        date_time_obj = datetime.datetime.strptime(date,'%B %d %Y')
+        new_date = date_time_obj.date()
+        
+    elif re.search(re_date7,date):
+        print(date)
+        for suffix in ('st', 'nd', 'rd', 'th'):
+            date = date.replace(suffix, '')
+        date_time_obj = datetime.datetime.strptime(date,'%b %d %Y')
+        new_date = date_time_obj.date()
 
     else:
         #print(date)
