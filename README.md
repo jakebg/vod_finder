@@ -2,7 +2,5 @@
 
 https://dbdiagram.io/embed/60a2c533b29a09603d154366
 
+This series of programs helps create a database of VODs(videos on demand) of twitch streamer previous streams that were reuploaded to youtube.
 
-yt_playlist_lister
-insert_to_db.py
-get_db_entry.py
